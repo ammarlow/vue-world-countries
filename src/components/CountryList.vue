@@ -119,7 +119,8 @@
                                             {{ data }}
                                         </li>
                                     </td>
-                                    <td class="whitespace-nowrap py-4 pl-4 pr-3 bg-gray-50 text-sm font-medium text-gray-500 sm:pl-0">
+                                    <td
+                                        class="whitespace-nowrap py-4 pl-4 pr-3 bg-gray-50 text-sm font-medium text-gray-500 sm:pl-0">
                                         <div class="h-4 bg-green-500"
                                             :style="{ width: getPopulationPercentage(item.population) + '%' }">
                                         </div>
@@ -164,77 +165,86 @@ export default {
     },
     methods: {
         sortedArray(field) {
-            if (field == 'name') {
-                function compare(a, b) {
-                    if (a.name.common < b.name.common)
+            function compareName(a, b) {
+                if (a.name.common < b.name.common)
+                    return -1;
+                if (a.name.common > b.name.common)
+                    return 1;
+                return 0;
+            }
+
+            function compareRegion(a, b) {
+                if (a[field] < b[field])
+                    return -1;
+                if (a[field] > b[field])
+                    return 1;
+                return 0;
+            }
+
+            function compareCapital(a, b) {
+                if (a.capital && b.capital) {
+                    if (a.capital[0] < b.capital[0]) {
                         return -1;
-                    if (a.name.common > b.name.common)
-                        return 1;
-                    return 0;
-                }
-                this.susun.name = false
-                return this.countries.sort(compare);
-            } else if (field == 'region') {
-                function compare(a, b) {
-                    if (a[field] < b[field])
-                        return -1;
-                    if (a[field] > b[field])
-                        return 1;
-                    return 0;
-                }
-                this.susun.region = false
-                return this.countries.sort(compare);
-            } else if (field == 'capital') {
-                function compare(a, b) {
-                    if (a.capital && b.capital) {
-                        if (a.capital[0] < b.capital[0]) {
-                            return -1;
-                        }
-                        if (a.capital[0] > b.capital[0]) {
-                            return 1;
-                        }
                     }
-                    return 0;
+                    if (a.capital[0] > b.capital[0]) {
+                        return 1;
+                    }
                 }
-                this.susun.capital = false
-                return this.countries.sort(compare);
+                return 0;
+            }
+
+            if (field == 'name') {
+                this.susun.name = false;
+                return this.countries.sort(compareName);
+            } else if (field == 'region') {
+                this.susun.region = false;
+                return this.countries.sort(compareRegion);
+            } else if (field == 'capital') {
+                this.susun.capital = false;
+                return this.countries.sort(compareCapital);
             }
         },
         sortedArrayDesc(field) {
-            if (field == 'name') {
-                function compare(a, b) {
-                    if (a.name.common < b.name.common)
+            function compareName(a, b) {
+                if (a.name.common < b.name.common)
+                    return 1;
+                if (a.name.common > b.name.common)
+                    return -1;
+                return 0;
+            }
+
+            function compareRegion(a, b) {
+                if (a[field] < b[field])
+                    return 1;
+                if (a[field] > b[field])
+                    return -1;
+                return 0;
+            }
+
+            function compareCapital(a, b) {
+                if (a.capital && b.capital) {
+                    if (a.capital[0] < b.capital[0]) {
                         return 1;
-                    if (a.name.common > b.name.common)
+                    }
+                    if (a.capital[0] > b.capital[0]) {
                         return -1;
-                    return 0;
-                }
-                this.susun.name = true
-                return this.countries.sort(compare);
-            } else if (field == 'region') {
-                function compare(a, b) {
-                    if (a[field] < b[field])
-                        return 1;
-                    if (a[field] > b[field])
-                        return -1;
-                    return 0;
-                }
-                this.susun.region = true
-                return this.countries.sort(compare);
-            } else if (field == 'capital') {
-                function compare(a, b) {
-                    if (a.capital && b.capital) {
-                        if (a.capital[0] < b.capital[0])
-                            return 1;
-                        if (a.capital[0] > b.capital[0])
-                            return -1;
-                        return 0;
                     }
                 }
-                this.susun.capital = true
-                return this.countries.sort(compare);
+                return 0;
+            }
+
+            if (field == 'name') {
+                this.susun.name = true;
+                return this.countries.sort(compareName);
+            } else if (field == 'region') {
+                this.susun.region = true;
+                return this.countries.sort(compareRegion);
+            } else if (field == 'capital') {
+                this.susun.capital = true;
+                return this.countries.sort(compareCapital);
             }
         },
+
         getHighlightedText(text, highlight) {
             const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
             return parts.map((part) =>
