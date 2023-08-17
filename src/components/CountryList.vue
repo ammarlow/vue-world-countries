@@ -93,15 +93,8 @@
                             <tbody class="divide-y divide-gray-200">
                                 <tr v-for="item in filteredCountries" :key="item.name">
                                     <td class="flex whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-                                        <input type="checkbox" v-model="item.isFavorite" @change="toggleFavorite(item)">
-                                        <span v-if="item.isFavorite">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                                                class="w-6 h-6 ml-4 text-yellow-500">
-                                                <path fill-rule="evenodd"
-                                                    d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                        </span>
+                                        <button v-if="!item.isFavorite" @click="toggleFavorite(item)" class="rounded bg-blue-500 px-2 py-1 text-sm text-white shadow-sm hover:bg-blue-400">Favorites 👍</button>
+                                        <button v-if="item.isFavorite" @click="toggleFavorite(item)" class="rounded bg-blue-100 px-2 py-1 text-sm text-gray-900 shadow-sm hover:bg-blue-200">Unfavorites 👎</button>
                                     </td>
                                     <td class="whitespace-nowrap px-3 py-4 text-4xl text-gray-500">
                                         {{ item.flag }}</td>
@@ -261,7 +254,7 @@ export default {
         toggleFavorite(country) {
             const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
             const index = favorites.indexOf(country.name.common);
-            console.log(country)
+
             if (index > -1) {
                 favorites.splice(index, 1);
             } else {
@@ -270,7 +263,6 @@ export default {
 
             localStorage.setItem('favorites', JSON.stringify(favorites));
             country.isFavorite = !country.isFavorite;
-            window.location.reload()
         },
         getPopulationPercentage(population) {
             const maxPopulation = 1000000000;
@@ -280,9 +272,10 @@ export default {
     mounted() {
         axios.get('https://restcountries.com/v3.1/all')
             .then(response => {
+                const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
                 this.countries = response.data.map(country => ({
                     ...country,
-                    isFavorite: JSON.parse(localStorage.getItem('favorites') || '[]').includes(country.name.common)
+                    isFavorite: favorites.includes(country.name.common)
                 }));
             })
             .catch(error => {
